@@ -1,1 +1,1 @@
- //open Terminal Shortcut Key [] Crtl + Shift + ` ] (VS code)
+ //open Terminal Shortcut Key [ Crtl + Shift + ` ] (VS code)
