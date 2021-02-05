@@ -1,0 +1,1 @@
+ //open Terminal Shortcut Key [] Crtl + Shift + ` ] (VS code)
