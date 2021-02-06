@@ -18,13 +18,20 @@ import './index.css';
       </button>    
     );
   }
+  
+  type boardSetting = {
+    boardSize: number;
+    boardRow: number[];
+    boardSquares: number[];
+  }
 
-  interface BordProps{
+  interface BoardProps{
       squares: SquareType[];
       onClick: (i: number) => void;
+      
   }
   
-  class Board extends React.Component<BordProps, {}> {
+  class Board extends React.Component<BoardProps,boardSetting, {}> {
 
     renderSquare(i: number) {
       return (
@@ -36,25 +43,50 @@ import './index.css';
     }
   
     render() {
+      const boardSize = 3;
+      const boardRow = [];
+
+      for(let row: number = 0; row<boardSize; row++){
+        const boardSquares = [];
+
+        for(let col: number = 0; col< boardSize; col++){
+          boardSquares[col] = this.renderSquare(row * 3 + col);
+        }
+
+        boardRow.push(
+          <div className="board-row" key={row}>
+            {boardSquares}
+          </div> 
+        )
+
+      }
+
+      return(
+        <div>{boardRow}</div>
+      );
+
+      
+      /*
       return (
         <div>
           <div className="board-row">
             {this.renderSquare(0)}
             {this.renderSquare(1)}
-            {this.renderSquare(2)}
+            {this.renderSquare(2)} //boardRow[0]
           </div>
           <div className="board-row">
             {this.renderSquare(3)}
             {this.renderSquare(4)}
-            {this.renderSquare(5)}
+            {this.renderSquare(5)} //boardRow[1]
           </div>
           <div className="board-row">
             {this.renderSquare(6)}
             {this.renderSquare(7)}
-            {this.renderSquare(8)}
+            {this.renderSquare(8)} //boardRow[2]
           </div>
         </div>
-      );
+
+      ); */
     }
   }
   
