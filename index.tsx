@@ -15,7 +15,7 @@ import './index.css';
   function Square(props: SquareProps){
     return (
       <button 
-      className={props.highlight ? "square highlight" :"square"  }
+      className={props.highlight ? "square highlight" :"square"}
       onClick = {props.onClick}>
         {props.value}
       </button>    
@@ -150,6 +150,7 @@ import './index.css';
       const history = this.state.history;
       const current = history[this.state.stepNumber];
       const winner = calculateWinner(current.squares);
+      const finished = !current.squares.includes(null);
 
       const moves = history.map((step, move)=> {
           const desc = move ?
@@ -171,12 +172,15 @@ import './index.css';
       let status;
       let highlights: number[] = [];
       if (winner) {
-        status = 'Winner: ' + winner.winner;
-        highlights = winner.loc;
+        status = 'Winner: ' + winner.winner; //calculateWinnerの中のwinnerを返す
+        highlights = winner.loc;　//calculateWinnerの中のlocを返す
         
-      } else {
-        status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+      } else if(finished) {
+        status = "Draw";
       }
+      else {
+        status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+      } 
 
       return (
         <div className="game">
