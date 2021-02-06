@@ -8,12 +8,15 @@ import './index.css';
 
   interface SquareProps {
       value: SquareType;
+      highlight: boolean;
       onClick: () => void;
   }
 
   function Square(props: SquareProps){
     return (
-      <button className="square" onClick = {props.onClick}>
+      <button 
+      className={props.highlight ? "square highlight" :"square"  }
+      onClick = {props.onClick}>
         {props.value}
       </button>    
     );
@@ -28,6 +31,7 @@ import './index.css';
   interface BoardProps{
       squares: SquareType[];
       onClick: (i: number) => void;
+      highlights: number[];
       
   }
   
@@ -37,6 +41,7 @@ import './index.css';
       return (
         <Square 
           value={this.props.squares[i]}
+          highlight={this.props.highlights.includes(i)}
           onClick={() => this.props.onClick(i)}
         />
       );
@@ -65,28 +70,6 @@ import './index.css';
         <div>{boardRow}</div>
       );
 
-      
-      /*
-      return (
-        <div>
-          <div className="board-row">
-            {this.renderSquare(0)}
-            {this.renderSquare(1)}
-            {this.renderSquare(2)} //boardRow[0]
-          </div>
-          <div className="board-row">
-            {this.renderSquare(3)}
-            {this.renderSquare(4)}
-            {this.renderSquare(5)} //boardRow[1]
-          </div>
-          <div className="board-row">
-            {this.renderSquare(6)}
-            {this.renderSquare(7)}
-            {this.renderSquare(8)} //boardRow[2]
-          </div>
-        </div>
-
-      ); */
     }
   }
   
@@ -99,6 +82,7 @@ import './index.css';
     history: HistoryData[];
     xIsNext: boolean;
     stepNumber: number;
+    sortType: boolean; //false : 'ascending' , true : 'descending'
   }
 
   
@@ -116,8 +100,11 @@ import './index.css';
         }],
         stepNumber: 0,
         xIsNext: true,
+        sortType: false 
       }
     }
+
+    
 
     handleClick(i: number) {
       const history = this.state.history.slice(0, this.state.stepNumber + 1);
@@ -138,6 +125,18 @@ import './index.css';
         stepNumber: history.length,
         xIsNext: !this.state.xIsNext,
       });
+    }
+
+    toggleSortType(){
+      if(this.state.sortType === false){
+        this.setState({
+          sortType: true,
+        });
+      }else if(this.state.sortType === true){
+        this.setState({
+          sortType: false,
+        });
+      }
     }
 
     jumpTo(step: number){
@@ -170,8 +169,11 @@ import './index.css';
           )
       });
       let status;
+      let highlights: number[] = [];
       if (winner) {
-        status = 'Winner: ' + winner;
+        status = 'Winner: ' + winner.winner;
+        highlights = winner.loc;
+        
       } else {
         status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
       }
@@ -181,12 +183,14 @@ import './index.css';
           <div className="game-board">
             <Board
               squares={current.squares}
+              highlights = {highlights}
               onClick={(i: number) => this.handleClick(i)}
             />
           </div>
           <div className="game-info">
             <div>{status}</div>
-            <ol>{moves}</ol>
+            <ol>{this.state.sortType ? moves.reverse() : moves}</ol>
+            <button type="button" onClick = {() =>this.toggleSortType()}>sort</button>
           </div>
         </div>
       );
@@ -200,7 +204,12 @@ import './index.css';
     document.getElementById('root')
   );
 
-  function calculateWinner(squares: Array<SquareType>) {
+  type WinnerData = {
+    winner: SquareType,
+    loc: number[]
+  }
+
+  function calculateWinner(squares: Array<SquareType>): WinnerData | null {
     const lines = [
       [0, 1, 2],
       [3, 4, 5],
@@ -211,13 +220,16 @@ import './index.css';
       [0, 4, 8],
       [2, 4, 6],
     ];
+
     for (let i = 0; i < lines.length; i++) {
       const [a, b, c] = lines[i];
       if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-        return squares[a];
+        return {
+          winner: squares[a],
+          loc: lines[i]
+        };
       }
     }
     return null;
   }
-
  
